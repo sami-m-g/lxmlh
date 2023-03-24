@@ -5,7 +5,6 @@ from typing import Any, Callable, Dict
 
 import numpy as np
 
-
 TIMESTAMP_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
 
 TYPE_FUNC_MAP: Dict[type, Callable[[str], Any]] = {
