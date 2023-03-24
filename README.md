@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/pypi/l/lxmlh)][license]
 
 [![Read the documentation at https://lxmlh.readthedocs.io/](https://img.shields.io/readthedocs/lxmlh/latest.svg?label=Read%20the%20Docs)][read the docs]
-[![Tests](https://github.com/sami-m-g/lxmlh/workflows/Tests/badge.svg)][tests]
+[![Tests](https://github.com/sami-m-g/lxmlh/actions/workflows/python-test.yml/badge.svg)][tests]
 [![Codecov](https://codecov.io/gh/sami-m-g/lxmlh/branch/main/graph/badge.svg)][codecov]
 
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)][pre-commit]
