@@ -25,16 +25,17 @@ def set_attribute(
 
 
 def set_attribute_list(
-    element: etree.ElementBase, key: str, values: List[str], schema_file: str
+    element: etree.ElementBase, key: str, values: List[Any], schema_file: str
 ) -> None:
     """Helper method for setting XML list attributes. Raises DocumentInvalid
     exception on inappropriate setting according to XSD schema."""
     for oldValue in get_element_list(element, key):
         element.remove(oldValue)
     elements = []
+    nameSpace = element.nsmap.get(None, "")
     for value in values:
-        elements.append(etree.SubElement(element, f"{{{element.nsmap[None]}}}{key}"))
-        elements[-1].text = value
+        elements.append(etree.SubElement(element, f"{{{nameSpace}}}{key}"))
+        elements[-1].text = str(value)
     element.extend(elements)
     schema = etree.XMLSchema(file=schema_file)
     schema.assertValid(element.getroottree())
@@ -51,8 +52,7 @@ def set_element_text(
 
 
 def get_element(parent: etree.ElementBase, element: str) -> etree.ElementBase:
-    """Helper wrapper method for retrieving XML elements as custom
-    XML classes."""
+    """Helper wrapper method for retrieving XML elements as custom XML classes."""
     return parent.find(element, namespaces=parent.nsmap)
 
 
@@ -129,11 +129,18 @@ def create_attribute(
 
 
 def create_element_text(name: str, element_type: type, schema_file: str) -> property:
-    """Helper wrapper method for creating setters and getters for
-    an element text."""
+    """Helper wrapper method for creating setters and getters for an element text."""
     return property(
         fget=lambda self: get_element_text(self, name, element_type),
         fset=lambda self, value: set_element_text(self, name, value, schema_file),
+    )
+
+
+def create_attribute_list(name: str, attr_type: type, schema_file: str) -> property:
+    """Helper wrapper method for creating setters and getters for an attribute list."""
+    return property(
+        fget=lambda self: get_attribute_list(self, name, attr_type),
+        fset=lambda self, values: set_attribute_list(self, name, values, schema_file),
     )
 
 
