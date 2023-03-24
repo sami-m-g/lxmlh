@@ -18,8 +18,8 @@ from lxmlh import (
 )
 
 
-@pytest.fixture(name="root")
-def __root() -> etree.ElementTree:
+@pytest.fixture(name="ship_order")
+def __ship_order() -> etree.ElementTree:
     dataDir = os.path.join(Path(__file__).parent.parent.resolve(), "data")
     sampleFile = os.path.join(dataDir, "sample.xml")
     schemaFile = os.path.join(dataDir, "schema.xsd")
@@ -68,39 +68,39 @@ def __root() -> etree.ElementTree:
 
     parser = objectify.makeparser(schema=etree.XMLSchema(file=schemaFile))
     parser.set_element_class_lookup(_Lookup())
-    root = objectify.parse(sampleFile, parser).getroot()
+    shipOrder = objectify.parse(sampleFile, parser).getroot()
 
-    return root
+    return shipOrder
 
 
-def test_create_attribute(root: etree.ElementTree) -> None:
+def test_create_attribute(ship_order: etree.ElementTree) -> None:
     """It creates an attribute that user can get and set properly."""
-    assert root.orderId == "889923"
+    assert ship_order.orderId == "889923"
 
     newOrderId = "1234"
-    root.orderId = newOrderId
-    assert root.orderId == newOrderId
+    ship_order.orderId = newOrderId
+    assert ship_order.orderId == newOrderId
 
 
-def test_create_element_text(root: etree.ElementTree) -> None:
+def test_create_element_text(ship_order: etree.ElementTree) -> None:
     """It creates an element text that user can get and set properly."""
-    assert root.orderPerson == "John Smith"
+    assert ship_order.orderPerson == "John Smith"
 
     newOrderPerson = "John Doe"
-    root.orderPerson = newOrderPerson
-    assert root.orderPerson == newOrderPerson
+    ship_order.orderPerson = newOrderPerson
+    assert ship_order.orderPerson == newOrderPerson
 
 
-def test_create_attribute_list(root: etree.ElementTree) -> None:
+def test_create_attribute_list(ship_order: etree.ElementTree) -> None:
     """It creates an attribute list that user can get and set properly."""
-    assert root.discounts == [1, 2]
+    assert ship_order.discounts == [1, 2]
 
     newDiscounts = [3]
-    root.discounts = newDiscounts
-    assert root.discounts == newDiscounts
+    ship_order.discounts = newDiscounts
+    assert ship_order.discounts == newDiscounts
 
 
-def test_fill_in_defaults(root: etree.ElementTree) -> None:
+def test_fill_in_defaults(ship_order: etree.ElementTree) -> None:
     "It fills defaults properly."
     staticDefaults = {"_ShipOrder": {"orderStatus": "wip"}}
 
@@ -109,24 +109,24 @@ def test_fill_in_defaults(root: etree.ElementTree) -> None:
 
     dynamicDefaults = {"_ShipOrder": {"orderTime": _get_order_time}}
 
-    fill_in_defaults(root, staticDefaults, dynamicDefaults)
-    assert root.orderStatus == staticDefaults["_ShipOrder"]["orderStatus"]
-    assert root.orderTime == root.orderId
+    fill_in_defaults(ship_order, staticDefaults, dynamicDefaults)
+    assert ship_order.orderStatus == staticDefaults["_ShipOrder"]["orderStatus"]
+    assert ship_order.orderTime == ship_order.orderId
 
 
-def test_get_element(root: etree.ElementTree) -> None:
+def test_get_element(ship_order: etree.ElementTree) -> None:
     """It gets an element properly."""
-    shipTo = root.shipTo
+    shipTo = ship_order.shipTo
     assert shipTo.name == "Ola Nordmann"
 
 
-def test_get_element_list(root: etree.ElementTree) -> None:
+def test_get_element_list(ship_order: etree.ElementTree) -> None:
     """It gets an element list properly."""
-    items = root.itemsList
+    items = ship_order.itemsList
     assert len(items) == 2
 
 
-def test_get_inner_text_list(root: etree.ElementTree) -> None:
+def test_get_inner_text_list(ship_order: etree.ElementTree) -> None:
     """It gets an inner text list properly."""
-    items = root.itemsList
+    items = ship_order.itemsList
     assert items[0].notes == ["Item1", "Item1.1"]
