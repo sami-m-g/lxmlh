@@ -18,6 +18,7 @@ from lxmlh import (
 
 DIR_DATA = os.path.join(Path(__file__).parent.parent.resolve(), "data")
 FILE_SAMPLE = os.path.join(DIR_DATA, "sample.xml")
+FILE_SAMPLE_DEFAULTS = os.path.join(DIR_DATA, "sample_defaults.xml")
 FILE_SCHEMA = os.path.join(DIR_DATA, "schema.xsd")
 
 

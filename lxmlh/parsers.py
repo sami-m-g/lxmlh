@@ -93,7 +93,9 @@ def save_file(
     if dynamic_defaults is None:
         dynamic_defaults = {}
 
-    fill_in_defaults(root, static_defaults, dynamic_defaults)
+    if len(static_defaults) != 0 and len(dynamic_defaults) != 0:
+        fill_in_defaults(root, static_defaults, dynamic_defaults)
+
     root = etree.ElementTree(root)
     root.write(
         path,
