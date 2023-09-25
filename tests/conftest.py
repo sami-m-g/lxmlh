@@ -1,5 +1,6 @@
 """Fixtures for lxmlh"""
 import os
+import zipfile
 from pathlib import Path
 from typing import List
 
@@ -17,9 +18,15 @@ from lxmlh import (
 )
 
 DIR_DATA = os.path.join(Path(__file__).parent.parent.resolve(), "data")
-FILE_SAMPLE = os.path.join(DIR_DATA, "sample.xml")
-FILE_SAMPLE_DEFAULTS = os.path.join(DIR_DATA, "sample_defaults.xml")
-FILE_SCHEMA = os.path.join(DIR_DATA, "schema.xsd")
+FILE_NAME_ZIP = "data.zip"
+FILE_SAMPLE = Path(os.path.join(DIR_DATA, "sample.xml"))
+FILE_SAMPLE_DEFAULTS = Path(os.path.join(DIR_DATA, "sample_defaults.xml"))
+FILE_SAMPLE_INVALID = Path(os.path.join(DIR_DATA, "sample.xml.invalid"))
+FILE_SCHEMA = Path(os.path.join(DIR_DATA, "schema.xsd"))
+ERROR_STR = (
+    "ERROR:SCHEMASV:SCHEMAV_CVC_COMPLEX_TYPE_4: Element 'shiporder': "
+    "The attribute 'orderid' is required but missing."
+)
 
 
 class ShipTo(etree.ElementBase):
@@ -79,3 +86,37 @@ class Lookup(etree.CustomElementClassLookup):
 @pytest.fixture(name="ship_order")
 def __ship_order() -> etree.ElementTree:
     return parse_file(FILE_SAMPLE, FILE_SCHEMA, Lookup())
+
+
+@pytest.fixture(name="random_file_name")
+def __random_file_name() -> str:
+    return os.urandom(24).hex()
+
+
+@pytest.fixture(name="zip_data")
+def __zip_data(tmpdir) -> str:
+    zipFilePath = os.path.join(tmpdir, FILE_NAME_ZIP)
+    with zipfile.ZipFile(zipFilePath, "w", zipfile.ZIP_DEFLATED) as zipFile:
+        for root, _, files in os.walk(DIR_DATA):
+            for file in files:
+                zipFile.write(os.path.join(root, file), file)
+    return zipFilePath
+
+
+def compare_files(file1: str, file2: str) -> bool:
+    """Compares two files ignoring whitespace."""
+    with open(file1, encoding="utf-8") as inputFile:
+        with open(file2, encoding="utf-8") as outputFile:
+            mapping = {ord(c): "" for c in [" ", "\t", "\n"]}
+            translatedOutput = outputFile.read().translate(mapping)
+            translatedInput = inputFile.read().translate(mapping)
+            return translatedOutput == translatedInput
+
+
+def confirm_validation_results(validation_results: List) -> None:
+    """Tests validation results."""
+    for validationResult in validation_results:
+        if validationResult[0].name == FILE_SAMPLE_INVALID.name:
+            assert str(validationResult[1][0]).find(ERROR_STR) != -1
+        else:
+            assert validationResult[1] is None

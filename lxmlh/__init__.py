@@ -12,7 +12,15 @@ from .helpers import (
     get_element_list,
     get_inner_text_list,
 )
-from .parsers import parse_directory, parse_file, save_file, validate_file
+from .parsers import (
+    parse_directory,
+    parse_file,
+    parse_zip_file,
+    save_file,
+    validate_directory,
+    validate_file,
+    validate_zip_file,
+)
 
 __all__ = (
     "__version__",
@@ -25,11 +33,14 @@ __all__ = (
     "get_inner_text_list",
     "parse_directory",
     "parse_file",
+    "parse_zip_file",
     "save_file",
     "TIMESTAMP_FORMAT",
     "TYPE_DEFAULTS",
     "TYPE_FUNC_MAP",
+    "validate_directory",
     "validate_file",
+    "validate_zip_file",
 )
 
 

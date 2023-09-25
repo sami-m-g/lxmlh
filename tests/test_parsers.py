@@ -1,45 +1,46 @@
 """Test cases for the __parsers__ module."""
 import os
-import tempfile
-from io import StringIO
-from pathlib import Path
 
 from lxml import etree
 
-from lxmlh.parsers import parse_directory, save_file, validate_file
+from lxmlh.parsers import (
+    parse_zip_file,
+    save_file,
+    validate_directory,
+    validate_zip_file,
+)
 
-from .conftest import FILE_SAMPLE, FILE_SAMPLE_DEFAULTS, FILE_SCHEMA, Lookup
+from .conftest import (
+    DIR_DATA,
+    FILE_SAMPLE,
+    FILE_SAMPLE_DEFAULTS,
+    FILE_SCHEMA,
+    Lookup,
+    compare_files,
+    confirm_validation_results,
+)
 
 
-def test_parse_directory() -> None:
+def test_parse_zip_file(zip_data) -> None:
     """It reads all files successfully."""
-    dirPath = os.path.join(Path(__file__).parent.parent.resolve(), "data")
-    files = [os.path.join(dirPath, "sample.xml")]
-    roots = sorted(parse_directory(dirPath, FILE_SCHEMA, Lookup()))
+    roots = sorted(parse_zip_file(zip_data, FILE_SCHEMA, Lookup()))
 
     assert len(roots) == 2
-    assert roots[0][0] == Path(files[0])
+    assert roots[0][0].name == FILE_SAMPLE.name
     assert roots[0][1].shipTo.name == "Ola Nordmann"
 
 
-def _compare_files(file1: str, file2: str) -> bool:
-    with open(file1, encoding="utf-8") as inputFile:
-        with open(file2, encoding="utf-8") as outputFile:
-            mapping = {ord(c): "" for c in [" ", "\t", "\n"]}
-            translatedOutput = outputFile.read().translate(mapping)
-            translatedInput = inputFile.read().translate(mapping)
-            return translatedOutput == translatedInput
-
-
-def test_save_file(ship_order: etree.ElementTree) -> None:
+def test_save_file(ship_order: etree.ElementTree, tmpdir, random_file_name) -> None:
     """It saves file correctly."""
-    outputPath = os.path.join(tempfile.gettempdir(), os.urandom(24).hex())
+    outputPath = os.path.join(tmpdir, random_file_name)
     save_file(ship_order, outputPath)
 
-    assert _compare_files(FILE_SAMPLE, outputPath)
+    assert compare_files(FILE_SAMPLE, outputPath)
 
 
-def test_save_file_defaults(ship_order: etree.ElementTree) -> None:
+def test_save_file_defaults(
+    ship_order: etree.ElementTree, tmpdir, random_file_name
+) -> None:
     """It saves file correctly."""
 
     def _get_order_time(element: etree.ElementBase) -> str:
@@ -47,30 +48,26 @@ def test_save_file_defaults(ship_order: etree.ElementTree) -> None:
 
     staticDefaults = {"ShipOrder": {"orderStatus": "wip"}}
     dynamicDefaults = {"ShipOrder": {"orderTime": _get_order_time}}
-    outputPath = os.path.join(tempfile.gettempdir(), os.urandom(24).hex())
+    outputPath = os.path.join(tmpdir, random_file_name)
     save_file(
         ship_order,
         outputPath,
         static_defaults=staticDefaults,
         dynamic_defaults=dynamicDefaults,
     )
-
-    assert _compare_files(FILE_SAMPLE_DEFAULTS, outputPath)
-
-
-def test_validate_file() -> None:
-    """It validates file correctly."""
-    assert validate_file(FILE_SAMPLE, FILE_SCHEMA) is None
+    assert compare_files(FILE_SAMPLE_DEFAULTS, outputPath)
 
 
-def test_validate_file_fail() -> None:
-    """It validates file correctly."""
-    xml = StringIO("<shiporder></shiporder>")
-    errorExpected = (
-        "<string>:1:0:ERROR:SCHEMASV:SCHEMAV_CVC_COMPLEX_TYPE_4: "
-        "Element 'shiporder': The attribute 'orderid' is required but missing."
+def test_validate_directory() -> None:
+    """It validates directory correctly."""
+    validationResults = validate_directory(DIR_DATA, FILE_SCHEMA)
+    confirm_validation_results(validationResults)
+
+
+def test_validate_zip_file_with_fail(zip_data) -> None:
+    """It validates zip file correctly."""
+    validSuffixes = [".xml", ".invalid"]
+    validationResults = validate_zip_file(
+        zip_data, FILE_SCHEMA, valid_suffixes=validSuffixes
     )
-    errorActual = validate_file(xml, FILE_SCHEMA)
-
-    assert errorActual is not None
-    assert str(errorActual[0]) == errorExpected
+    confirm_validation_results(validationResults)

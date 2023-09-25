@@ -1,4 +1,6 @@
 """lxml parser methods."""
+import tempfile
+import zipfile
 from io import StringIO
 from pathlib import Path
 from typing import Callable, Dict, List, Tuple, Union
@@ -72,6 +74,69 @@ def parse_directory(
         for file_path in dir_path.iterdir()
         if file_path.is_file() and file_path.suffix.lower() in valid_suffixes
     ]
+
+
+def validate_directory(
+    dir_path: Union[str, Path],
+    schema_path: str,
+    valid_suffixes: Union[List[str], None] = None,
+) -> List[Tuple[Path, Union[None, List[str]]]]:
+    """Validates a directory of XML files against a given schema.
+    Parameters:
+    dir_path: the directory path, should contain files of only the schema_path version.
+    schema_path: the path to the XSD schema file.
+    valid_suffixes: a list of valid file suffixes which will only be considered for
+    validating. If None, defaults to [".xml"].
+    """
+    if valid_suffixes is None:
+        valid_suffixes = [".xml"]
+
+    dir_path = Path(dir_path).resolve()
+    return [
+        (file_path, validate_file(file=file_path, schema_path=schema_path))
+        for file_path in dir_path.iterdir()
+        if file_path.is_file() and file_path.suffix.lower() in valid_suffixes
+    ]
+
+
+def parse_zip_file(
+    file_path: Union[str, Path],
+    schema_path: str,
+    lookup: etree.CustomElementClassLookup,
+    valid_suffixes: Union[List[str], None] = None,
+) -> List[Tuple[Path, etree.ElementBase]]:
+    """Parses a ZIP file of XML files to a list of custom Python classes.
+    Parameters:
+    file_path: the ZIP file path, should contain files of only the schema_path version.
+    schema_path: the path to the XSD schema file.
+    lookup: the lookup class for mapping XML elements to custom Python classes.
+    valid_suffixes: a list of valid file suffixes which will only be considered for
+    parsing. If None, defaults to [".xml"].
+    Returns a list of tuples of file paths and corresponding custom Python classes
+    representing the root of the XML file.
+    """
+    with tempfile.TemporaryDirectory() as unzipDir:
+        with zipfile.ZipFile(file_path, "r") as zipFile:
+            zipFile.extractall(unzipDir)
+            return parse_directory(unzipDir, schema_path, lookup, valid_suffixes)
+
+
+def validate_zip_file(
+    file_path: Union[str, Path],
+    schema_path: str,
+    valid_suffixes: Union[List[str], None] = None,
+) -> None:
+    """Validates a ZIP file of XML files against a given schema.
+    Parameters:
+    dir_path: the ZIP file path, should contain files of only the schema_path version.
+    schema_path: the path to the XSD schema file.
+    valid_suffixes: a list of valid file suffixes which will only be considered for
+    validating. If None, defaults to [".xml"].
+    """
+    with tempfile.TemporaryDirectory() as unzipDir:
+        with zipfile.ZipFile(file_path, "r") as zipFile:
+            zipFile.extractall(unzipDir)
+            return validate_directory(unzipDir, schema_path, valid_suffixes)
 
 
 def save_file(
