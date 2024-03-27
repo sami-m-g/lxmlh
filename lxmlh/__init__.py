@@ -1,6 +1,6 @@
 """lxmlh."""
 import importlib.metadata
-from typing import Union
+from typing import Tuple, Union
 
 from .config import TIMESTAMP_FORMAT, TYPE_DEFAULTS, TYPE_FUNC_MAP
 from .helpers import (
@@ -44,7 +44,7 @@ __all__ = (
 )
 
 
-def _get_version_tuple() -> tuple:
+def _get_version_tuple() -> Tuple[Union[int, str]]:
     def as_integer(string: str) -> Union[int, str]:
         try:
             return int(string)
