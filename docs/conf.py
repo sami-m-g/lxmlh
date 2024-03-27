@@ -6,10 +6,18 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import datetime
+import pathlib
+
 project = 'lxmlh'
-copyright = '2024, Mina Sami'
+copyright = f'{datetime.date.today().year}, Mina Sami'
 author = 'Mina Sami'
-release = '1.3.0'
+
+version_file = pathlib.Path(__file__).parent.parent / 'VERSION'
+# Read the version number from VERSION file
+with open(version_file, 'r', encoding='UTF-8') as vf:
+    # The full version, including alpha/beta/rc tags
+    release = vf.read().strip().split('.')
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
