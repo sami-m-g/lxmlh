@@ -13,7 +13,7 @@ project = 'lxmlh'
 copyright = f'{datetime.date.today().year}, Mina Sami'
 author = 'Mina Sami'
 
-version_file = pathlib.Path(__file__).parent.parent / 'VERSION'
+version_file = pathlib.Path(__file__).parent.parent / 'lxmlh' / 'VERSION'
 # Read the version number from VERSION file
 with open(version_file, 'r', encoding='UTF-8') as vf:
     # The full version, including alpha/beta/rc tags
