@@ -1,7 +1,4 @@
 """lxmlh."""
-import importlib.metadata
-from typing import Tuple, Union
-
 from .config import TIMESTAMP_FORMAT, TYPE_DEFAULTS, TYPE_FUNC_MAP
 from .helpers import (
     create_attribute,
@@ -21,6 +18,7 @@ from .parsers import (
     validate_file,
     validate_zip_file,
 )
+from .version import __version__
 
 __all__ = (
     "__version__",
@@ -42,18 +40,3 @@ __all__ = (
     "validate_file",
     "validate_zip_file",
 )
-
-
-def _get_version_tuple() -> Tuple[Union[int, str]]:
-    def as_integer(string: str) -> Union[int, str]:
-        try:
-            return int(string)
-        except ValueError:  # pragma: no cover
-            return string  # pragma: no cover
-
-    return tuple(
-        as_integer(v) for v in importlib.metadata.version("lxmlh").strip().split(".")
-    )
-
-
-__version__ = _get_version_tuple()

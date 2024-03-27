@@ -8,17 +8,16 @@
 
 import datetime
 import pathlib
+import sys
+package_dir = pathlib.Path(__file__).parent.parent / 'lxmlh'
+sys.path.insert(0, str(package_dir.resolve()))
+
+from version import __version__
 
 project = 'lxmlh'
 copyright = f'{datetime.date.today().year}, Mina Sami'
 author = 'Mina Sami'
-
-version_file = pathlib.Path(__file__).parent.parent / 'lxmlh' / 'VERSION'
-# Read the version number from VERSION file
-with open(version_file, 'r', encoding='UTF-8') as vf:
-    # The full version, including alpha/beta/rc tags
-    release_list = vf.read().strip().split('.')
-release = '.'.join(release_list)
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
