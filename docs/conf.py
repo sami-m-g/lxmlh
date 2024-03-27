@@ -17,7 +17,8 @@ version_file = pathlib.Path(__file__).parent.parent / 'lxmlh' / 'VERSION'
 # Read the version number from VERSION file
 with open(version_file, 'r', encoding='UTF-8') as vf:
     # The full version, including alpha/beta/rc tags
-    release = vf.read().strip().split('.')
+    release_list = vf.read().strip().split('.')
+release = '.'.join(release_list)
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
