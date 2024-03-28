@@ -9,10 +9,11 @@
 import datetime
 import importlib
 
-__version__ = version = release = importlib.metadata.version("lxml")
+
 project = 'lxmlh'
 copyright = f'{datetime.date.today().year}, Mina Sami'
 author = 'Mina Sami'
+version = release = importlib.metadata.version("lxml")
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
