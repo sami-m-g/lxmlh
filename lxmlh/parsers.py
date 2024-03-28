@@ -1,4 +1,5 @@
 """lxml parser methods."""
+
 import tempfile
 import zipfile
 from io import StringIO

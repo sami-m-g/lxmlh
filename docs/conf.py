@@ -7,17 +7,12 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 import datetime
-import pathlib
-import sys
-package_dir = pathlib.Path(__file__).parent.parent / 'lxmlh'
-sys.path.insert(0, str(package_dir.resolve()))
+import importlib
 
-from version import __version__
-
+__version__ = version = release = importlib.metadata.version("lxml")
 project = 'lxmlh'
 copyright = f'{datetime.date.today().year}, Mina Sami'
 author = 'Mina Sami'
-release = __version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
