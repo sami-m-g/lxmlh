@@ -7,13 +7,33 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 import datetime
-import importlib.metadata
+import os
+import sys
+from unittest.mock import MagicMock
+
+
+class _Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+        return MagicMock()
+
+
+MOCK_MODULES = [
+    "lxml",
+    "numpy",
+]
+
+sys.modules.update((mod_name, _Mock()) for mod_name in MOCK_MODULES)
+sys.path.insert(0, os.path.abspath('../'))
+
+
+from lxmlh import __version__
 
 
 project = 'lxmlh'
 copyright = f'{datetime.date.today().year}, Mina Sami'
 author = 'Mina Sami'
-version = release = importlib.metadata.version('lxmlh')
+version = release = __version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
