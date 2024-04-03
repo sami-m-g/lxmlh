@@ -11,19 +11,12 @@ import os
 import sys
 from unittest.mock import MagicMock
 
-
-class _Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-        return MagicMock()
-
-
 MOCK_MODULES = [
     "lxml",
     "numpy",
 ]
 
-sys.modules.update((mod_name, _Mock()) for mod_name in MOCK_MODULES)
+sys.modules.update((module, MagicMock()) for module in MOCK_MODULES)
 sys.path.insert(0, os.path.abspath('../'))
 
 
