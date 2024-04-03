@@ -13,12 +13,12 @@ import importlib.metadata
 project = 'lxmlh'
 copyright = f'{datetime.date.today().year}, Mina Sami'
 author = 'Mina Sami'
-version = release = importlib.metadata.version("lxmlh")
+version = release = importlib.metadata.version('lxmlh')
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.viewcode"]
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
